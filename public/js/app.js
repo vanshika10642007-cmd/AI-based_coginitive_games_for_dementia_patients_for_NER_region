@@ -1,10 +1,14 @@
 const app=document.getElementById("app");
+function wait(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 const state={user:JSON.parse(localStorage.getItem("user")||"null"),view:"home",game:null,lang:localStorage.getItem("lang")||"en"};
 const gameMeta={
- cards:{icon:"🃏",title:"Connect Cards",desc:"Match hidden pairs to train visual memory and attention."},
- face:{icon:"🙂",title:"Face Recognizing",desc:"Recognize familiar demo faces. No external identity database is used."},
- sequence:{icon:"🧩",title:"Connect the Sequence",desc:"Arrange everyday events in the correct logical order."},
- association:{icon:"☕",title:"Memory Association",desc:"Connect related objects and ideas to exercise semantic memory."}
+ face:{icon:"🐶",title:"Face Recognition",desc:"Memorize faces and recognize the ones you saw."},
+ sequence:{icon:"🔢",title:"Sequence Recall",desc:"Remember and reproduce a sequence of numbers."},
+ cards:{icon:"🟦",title:"Pattern Memory",desc:"Watch a pattern of cells and repeat it in the correct order."},
+ nback:{icon:"🧠",title:"N-Back Memory",desc:"Remember letters and identify when the current letter matches one shown 2 steps ago."},
+ association:{icon:"🔗",title:"Memory Association",desc:"Memorize word associations and recall the correct match."}
 };
 function toast(x){const d=document.createElement("div");d.className="toast";d.textContent=x;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
 function shell(content){
@@ -33,9 +37,10 @@ function play(){
  return shell(nav()+`<div class="card"><div class="row between"><div><span class="pill">${g.icon} ${g.title}</span><h1>${g.title}</h1><p class="muted">${g.desc}</p></div><div><b>Personalized level</b><div id="levelBadge" class="pill">Level 2</div></div></div><div id="gameArea"></div></div>`);
 }
 function startGame(){
- if(state.game==="cards") window.GameCards.start();
  if(state.game==="face") window.GameFace.start();
  if(state.game==="sequence") window.GameSequence.start();
+ if(state.game==="cards") window.GameCards.start();
+ if(state.game==="nback") window.GameNBack.start();
  if(state.game==="association") window.GameAssociation.start();
 }
 function result(game,score,total,accuracy,details={}){
@@ -56,7 +61,7 @@ function saveSettings(){const l=document.getElementById("lang").value;localStora
 async function dashboard(){
  const d=await fetch("/api/dashboard/elder-1").then(r=>r.json());
  const rows=d.sessions.slice(-20).reverse().map(s=>`<tr><td>${gameMeta[s.game]?.title||s.game}</td><td>${s.score}/${s.total}</td><td>${Math.round(s.accuracy)}%</td><td>${s.difficulty||2}</td><td>${new Date(s.createdAt).toLocaleString()}</td></tr>`).join("");
- return shell(nav()+`<div class="hero card"><h1>📊 Caregiver Dashboard</h1><p class="muted">Observed gameplay performance only — not a clinical diagnosis.</p><div class="grid"><div class="card"><span class="muted">Sessions</span><div class="stat">${d.sessions.length}</div></div><div class="card"><span class="muted">Games tracked</span><div class="stat">4</div></div><div class="card"><span class="muted">Personalization</span><div class="stat">ON</div></div></div></div><div class="card"><h2>Recent performance</h2><div style="overflow:auto"><table><thead><tr><th>Game</th><th>Score</th><th>Accuracy</th><th>Level</th><th>Date</th></tr></thead><tbody>${rows||"<tr><td colspan=5>No sessions yet</td></tr>"}</tbody></table></div></div>`);
+ return shell(nav()+`<div class="hero card"><h1>📊 Caregiver Dashboard</h1><p class="muted">Observed gameplay performance only — not a clinical diagnosis.</p><div class="grid"><div class="card"><span class="muted">Sessions</span><div class="stat">${d.sessions.length}</div></div><div class="card"><span class="muted">Games tracked</span><div class="stat">5</div></div><div class="card"><span class="muted">Personalization</span><div class="stat">ON</div></div></div></div><div class="card"><h2>Recent performance</h2><div style="overflow:auto"><table><thead><tr><th>Game</th><th>Score</th><th>Accuracy</th><th>Level</th><th>Date</th></tr></thead><tbody>${rows||"<tr><td colspan=5>No sessions yet</td></tr>"}</tbody></table></div></div>`);
 }
 function render(){
  if(!state.user)return login();
