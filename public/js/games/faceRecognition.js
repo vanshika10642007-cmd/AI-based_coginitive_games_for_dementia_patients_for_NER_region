@@ -1,6 +1,101 @@
-window.GameFace={start(){
- const area=document.getElementById("gameArea"), people=[["👨🏽","Ramesh"],["👩🏽","Maya"],["👴🏽","Hari"],["👵🏽","Lina"]], target=people[Math.floor(Math.random()*people.length)];
- const opts=[target,...people.filter(p=>p[1]!==target[1]).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
- area.innerHTML=`<p>Remember the target face and name, then choose the same person.</p><div class="card" style="text-align:center;font-size:75px">${target[0]}<div style="font-size:22px;font-weight:bold">${target[1]}</div></div><h3>Who is the same person?</h3><div class="face-grid">${opts.map((p,i)=>`<button class="face" onclick="GameFace.answer(${i})">${p[0]}<small>Person ${i+1}</small></button>`).join("")}</div>`;
- this.target=target;this.opts=opts;
-},answer(i){const ok=this.opts[i][1]===this.target[1];result("face",ok?1:0,1,ok?100:0,{target:this.target[1]})}};
+window.GameFace = {
+    start() {
+        const area = document.getElementById("gameArea");
+
+        const emojis = [
+            '🐶','🐱','🐭','🐹','🐰','🦊',
+            '🐻','🐼','🐨','🐯','🦁','🐮'
+        ];
+
+        const targets = [...emojis]
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 4);
+
+        const distractors = [...emojis]
+            .filter(x => !targets.includes(x))
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 4);
+
+        const options = [...targets, ...distractors]
+            .sort(() => 0.5 - Math.random());
+
+        // Show faces to memorize
+        area.innerHTML = `
+            <h3>Memorize these faces:</h3>
+            <div>
+                ${targets.map(e =>
+                    `<span class="emoji-btn"
+                        style="font-size:60px; margin:10px; display:inline-block;">
+                        ${e}
+                    </span>`
+                ).join("")}
+            </div>
+            <p id="face-memory-msg">You have 5 seconds...</p>
+        `;
+
+        // After 5 seconds, show choices
+        setTimeout(() => {
+            area.innerHTML = `
+                <h3>Select the 4 faces you saw:</h3>
+
+                <div id="face-options">
+                    ${options.map((e, i) =>
+                        `<button class="emoji-btn"
+                            data-index="${i}"
+                            style="font-size:50px; margin:8px;">
+                            ${e}
+                        </button>`
+                    ).join("")}
+                </div>
+
+                <br>
+                <button id="face-submit" class="btn-large">
+                    Submit
+                </button>
+            `;
+
+            const selected = [];
+
+            area.querySelectorAll(".emoji-btn").forEach(btn => {
+                btn.onclick = () => {
+                    const emoji = btn.innerText.trim();
+
+                    if (selected.includes(emoji)) {
+                        selected.splice(selected.indexOf(emoji), 1);
+                        btn.classList.remove("selected");
+                    } else {
+                        selected.push(emoji);
+                        btn.classList.add("selected");
+                    }
+                };
+            });
+
+            document.getElementById("face-submit").onclick = () => {
+                const correct = selected.filter(
+                    x => targets.includes(x)
+                ).length;
+
+                const wrong = selected.filter(
+                    x => !targets.includes(x)
+                ).length;
+
+                const accuracy = Math.max(
+                    0,
+                    Math.round(((correct - wrong) / 4) * 100)
+                );
+
+                result(
+                    "face",
+                    correct,
+                    4,
+                    accuracy,
+                    {
+                        targets: targets.join(", "),
+                        selected: selected.join(", ")
+                    }
+                );
+            };
+
+        }, 5000);
+    }
+};
