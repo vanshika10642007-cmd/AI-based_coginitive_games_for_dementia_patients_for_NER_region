@@ -11,7 +11,7 @@ window.GameSequence = {
 
         area.innerHTML = `
             <h3 id="seq-display" style="font-size:3rem;">
-                Ready...
+                ${t("games.sequence.ready", "Ready...")}
             </h3>
         `;
 
@@ -40,7 +40,7 @@ window.GameSequence = {
 
         const showInput = () => {
             area.innerHTML = `
-                <h3>Enter the sequence:</h3>
+                <h3>${t("games.sequence.enterSequence", "Enter the sequence:")}</h3>
 
                 <input
                     type="number"
@@ -50,7 +50,7 @@ window.GameSequence = {
                 >
 
                 <button id="seq-submit" class="btn-large">
-                    Verify
+                    ${t("games.sequence.verify", "Verify")}
                 </button>
             `;
 

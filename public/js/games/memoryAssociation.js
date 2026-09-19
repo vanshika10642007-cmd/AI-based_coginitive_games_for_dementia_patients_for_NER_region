@@ -1,95 +1,101 @@
-window.GameAssociation = {
+window.GameFace = {
     start() {
         const area = document.getElementById("gameArea");
 
-        const allPairs = [
-            ["Ocean", "Blue"],
-            ["Sun", "Hot"],
-            ["Apple", "Red"],
-            ["Tree", "Green"],
-            ["Night", "Dark"],
-            ["Snow", "Cold"]
+        const emojis = [
+            '🐶','🐱','🐭','🐹','🐰','🦊',
+            '🐻','🐼','🐨','🐯','🦁','🐮'
         ];
 
-        const pairs = [...allPairs]
+        const targets = [...emojis]
             .sort(() => 0.5 - Math.random())
-            .slice(0, 3);
+            .slice(0, 4);
 
-        // Memorization screen
+        const distractors = [...emojis]
+            .filter(x => !targets.includes(x))
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 4);
+
+        const options = [...targets, ...distractors]
+            .sort(() => 0.5 - Math.random());
+
+        // Show faces to memorize
         area.innerHTML = `
-            <h3>Memorize the Associations</h3>
-
-            <div style="font-size:1.5rem; line-height:2;">
-                ${pairs.map(p =>
-                    `<b>${p[0]}</b> ➔ ${p[1]}`
-                ).join("<br>")}
+            <h3>${t("games.face.memorizeFaces", "Memorize these faces:")}</h3>
+            <div>
+                ${targets.map(e =>
+                    `<span class="emoji-btn"
+                        style="font-size:60px; margin:10px; display:inline-block;">
+                        ${e}
+                    </span>`
+                ).join("")}
             </div>
-
-            <p id="association-msg">
-                You have 6 seconds...
-            </p>
+            <p id="face-memory-msg">${t("games.face.fiveSeconds", "You have 5 seconds...")}</p>
         `;
 
-        // After 6 seconds, ask a question
+        // After 5 seconds, show choices
         setTimeout(() => {
-
-            const target =
-                pairs[Math.floor(Math.random() * pairs.length)];
-
-            let options = allPairs
-                .map(p => p[1])
-                .sort(() => 0.5 - Math.random())
-                .slice(0, 4);
-
-            // Make sure correct answer is included
-            if (!options.includes(target[1])) {
-                options[0] = target[1];
-            }
-
-            options.sort(() => 0.5 - Math.random());
-
             area.innerHTML = `
-                <h3>
-                    What was associated with
-                    <b>"${target[0]}"</b>?
-                </h3>
+                <h3>${t("games.face.selectFaces", "Select the 4 faces you saw:")}</h3>
 
-                <div style="
-                    display:flex;
-                    flex-wrap:wrap;
-                    justify-content:center;
-                    gap:10px;
-                ">
-                    ${options.map(option =>
-                        `<button class="btn-large pair-opt">
-                            ${option}
+                <div id="face-options">
+                    ${options.map((e, i) =>
+                        `<button class="emoji-btn"
+                            data-index="${i}"
+                            style="font-size:50px; margin:8px;">
+                            ${e}
                         </button>`
                     ).join("")}
                 </div>
+
+                <br>
+                <button id="face-submit" class="btn-large">
+                    ${t("submit", "Submit")}
+                </button>
             `;
 
-            area.querySelectorAll(".pair-opt").forEach(button => {
+            const selected = [];
 
-                button.onclick = () => {
+            area.querySelectorAll(".emoji-btn").forEach(btn => {
+                btn.onclick = () => {
+                    const emoji = btn.innerText.trim();
 
-                    const correct =
-                        button.innerText.trim() === target[1];
-
-                    result(
-                        "association",
-                        correct ? 1 : 0,
-                        1,
-                        correct ? 100 : 0,
-                        {
-                            target: target[0],
-                            expected: target[1],
-                            answer: button.innerText.trim()
-                        }
-                    );
+                    if (selected.includes(emoji)) {
+                        selected.splice(selected.indexOf(emoji), 1);
+                        btn.classList.remove("selected");
+                    } else {
+                        selected.push(emoji);
+                        btn.classList.add("selected");
+                    }
                 };
-
             });
 
-        }, 6000);
+            document.getElementById("face-submit").onclick = () => {
+                const correct = selected.filter(
+                    x => targets.includes(x)
+                ).length;
+
+                const wrong = selected.filter(
+                    x => !targets.includes(x)
+                ).length;
+
+                const accuracy = Math.max(
+                    0,
+                    Math.round(((correct - wrong) / 4) * 100)
+                );
+
+                result(
+                    "face",
+                    correct,
+                    4,
+                    accuracy,
+                    {
+                        targets: targets.join(", "),
+                        selected: selected.join(", ")
+                    }
+                );
+            };
+
+        }, 5000);
     }
 };
