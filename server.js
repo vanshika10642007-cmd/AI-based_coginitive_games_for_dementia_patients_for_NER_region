@@ -2,55 +2,32 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const { translateText } = require("./server/translation");
-const { getCachedTranslation, setCachedTranslation } = require("./server/translation-cache");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Vercel par read-only error se bachne ke liye /tmp folder ka use karein
-const DATA = process.env.VERCEL 
-  ? path.join("/tmp", "db.json") 
-  : path.join(__dirname, "data", "db.json");
+const DATA = path.join(__dirname, "data", "db.json");
 
 app.use(express.json({limit:"1mb"}));
 app.use(express.static(path.join(__dirname, "public")));
 
 function readDB(){
-  try {
-    fs.mkdirSync(path.dirname(DATA), { recursive: true });
-    if(!fs.existsSync(DATA)){
-      const db={users:[
-        {id:"elder-1",name:"Demo Elder",role:"elderly",pin:"demo123"},
-        {id:"caregiver-1",name:"Demo Caregiver",role:"caregiver",pin:"demo123"}
-      ],sessions:[],reminders:[
-        {id:"r1",title:"Morning medicine",time:"08:00",days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],active:true},
-        {id:"r2",title:"Drink water",time:"11:00",days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],active:true}
-      ],settings:{language:"en",voice:true}};
-      fs.writeFileSync(DATA, JSON.stringify(db,null,2));
-    }
-    return JSON.parse(fs.readFileSync(DATA,"utf8"));
-  } catch (err) {
-    // Fallback in-memory database if file system fails completely on Vercel
-    return {
-      users: [
-        {id:"elder-1",name:"Demo Elder",role:"elderly",pin:"demo123"},
-        {id:"caregiver-1",name:"Demo Caregiver",role:"caregiver",pin:"demo123"}
-      ],
-      sessions: [],
-      reminders: [],
-      settings: {language:"en",voice:true}
-    };
-  }
-}
-
-function writeDB(db){
-  try {
-    fs.mkdirSync(path.dirname(DATA), { recursive: true });
+  // Ensure the local data directory exists before creating the first database.
+  fs.mkdirSync(path.dirname(DATA), { recursive: true });
+  if(!fs.existsSync(DATA)){
+    const db={users:[
+      {id:"elder-1",name:"Demo Elder",role:"elderly",pin:"demo123"},
+      {id:"caregiver-1",name:"Demo Caregiver",role:"caregiver",pin:"demo123"}
+    ],sessions:[],reminders:[
+      {id:"r1",title:"Morning medicine",time:"08:00",days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],active:true},
+      {id:"r2",title:"Drink water",time:"11:00",days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],active:true}
+    ],settings:{language:"en",voice:true}};
     fs.writeFileSync(DATA, JSON.stringify(db,null,2));
-  } catch (err) {
-    console.error("Write DB failed (Read-only environment):", err.message);
   }
+  return JSON.parse(fs.readFileSync(DATA,"utf8"));
+}
+function writeDB(db){
+  fs.mkdirSync(path.dirname(DATA), { recursive: true });
+  fs.writeFileSync(DATA, JSON.stringify(db,null,2));
 }
 
 const GAMES = {
@@ -104,75 +81,9 @@ app.post("/api/sync",(req,res)=>{
   writeDB(db); res.json({ok:true,synced:items.length});
 });
 
-// ---------------------------------------------------------------------
-// Automatic multilingual translation
-// ---------------------------------------------------------------------
-const TRANSLATE_LANGS = new Set(["en", "as", "mni", "kha", "miz"]);
-
-const translateHits = new Map();
-const TRANSLATE_WINDOW_MS = 60 * 1000;
-const TRANSLATE_MAX_PER_WINDOW = 60;
-function isRateLimited(ip) {
-  const now = Date.now();
-  const hits = (translateHits.get(ip) || []).filter(t => now - t < TRANSLATE_WINDOW_MS);
-  hits.push(now);
-  translateHits.set(ip, hits);
-  return hits.length > TRANSLATE_MAX_PER_WINDOW;
-}
-
-app.post("/api/translate", async (req, res) => {
-  try {
-    if (isRateLimited(req.ip)) {
-      return res.status(429).json({ error: "Too many translation requests, please slow down." });
-    }
-
-    const { text, sourceLanguage, targetLanguage } = req.body || {};
-    const source = sourceLanguage || "en";
-    const target = targetLanguage;
-
-    if (typeof text !== "string" || !text.trim()) {
-      return res.status(400).json({ error: "text is required" });
-    }
-    if (text.length > 2000) {
-      return res.status(400).json({ error: "text is too long" });
-    }
-    if (!TRANSLATE_LANGS.has(source) || !TRANSLATE_LANGS.has(target)) {
-      return res.status(400).json({ error: "Unsupported language code" });
-    }
-
-    if (source === target) {
-      return res.json({ translatedText: text, sourceLanguage: source, targetLanguage: target, cached: false });
-    }
-
-    const existing = getCachedTranslation(source, target, text);
-    if (existing !== null) {
-      return res.json({ translatedText: existing, sourceLanguage: source, targetLanguage: target, cached: true });
-    }
-
-    const translatedText = await translateText(text, source, target);
-    setCachedTranslation(source, target, text, translatedText);
-    res.json({ translatedText, sourceLanguage: source, targetLanguage: target, cached: false });
-  } catch (err) {
-    console.error("Translation request failed:", err.message);
-    const fallbackText = (req.body && typeof req.body.text === "string") ? req.body.text : "";
-    res.json({
-      translatedText: fallbackText,
-      sourceLanguage: (req.body && req.body.sourceLanguage) || "en",
-      targetLanguage: (req.body && req.body.targetLanguage) || "",
-      cached: false,
-      fallback: true
-    });
-  }
-});
-
 app.get("*",(req,res)=>{
   if(req.path.startsWith("/api/")) return res.status(404).json({error:"API route not found"});
   res.sendFile(path.join(__dirname,"public","index.html"));
 });
 
-// Vercel deployment ke liye app ko export karein aur local par listen chalayein
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => console.log(`SIH platform running at http://localhost:${PORT}`));
-}
-
-module.exports = app;
+app.listen(PORT,()=>console.log(`SIH platform running at http://localhost:${PORT}`));
