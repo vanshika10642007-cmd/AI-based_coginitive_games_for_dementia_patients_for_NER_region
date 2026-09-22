@@ -4,7 +4,7 @@ const path = require("path");
 const crypto = require("crypto");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const DATA = path.join(__dirname, "data", "db.json");
 
 app.use(express.json({limit:"1mb"}));

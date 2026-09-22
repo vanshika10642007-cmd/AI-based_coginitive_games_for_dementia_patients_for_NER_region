@@ -86,6 +86,132 @@
           2
         ]
       }
+    },
+    {
+      "id": "6c9dbf15-2088-4fdf-a407-5537c7b1f19c",
+      "createdAt": "2026-09-22T03:58:48.667Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 0,
+      "total": 4,
+      "accuracy": 0,
+      "difficulty": 2,
+      "details": {
+        "targets": "🐰, 🦁, 🐭, 🐨",
+        "selected": "🐼"
+      }
+    },
+    {
+      "id": "7840d330-f3c6-46f5-bfd6-220928b3cfb7",
+      "createdAt": "2026-09-22T04:01:15.211Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 3,
+      "total": 4,
+      "accuracy": 50,
+      "difficulty": 2,
+      "details": {
+        "targets": "🐰, 🐼, 🐱, 🐭",
+        "selected": "🐼, 🐭, 🐰, 🦁"
+      }
+    },
+    {
+      "id": "8015fea0-13af-4920-8848-b95a9bf025a4",
+      "createdAt": "2026-09-22T04:02:09.878Z",
+      "userId": "elder-1",
+      "game": "sequence",
+      "score": 2,
+      "total": 5,
+      "accuracy": 40,
+      "difficulty": 2,
+      "details": {
+        "expected": "13443",
+        "answer": "1234"
+      }
+    },
+    {
+      "id": "e2f41c9f-1307-4a40-8391-98ff521e8295",
+      "createdAt": "2026-09-22T04:03:06.786Z",
+      "userId": "elder-1",
+      "game": "sequence",
+      "score": 0,
+      "total": 5,
+      "accuracy": 0,
+      "difficulty": 2,
+      "details": {
+        "expected": "92516",
+        "answer": "5465"
+      }
+    },
+    {
+      "id": "6a28ab16-c764-4a49-ba87-43ad7f6d3e13",
+      "createdAt": "2026-09-22T04:32:44.736Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 2,
+      "total": 4,
+      "accuracy": 25,
+      "difficulty": 2,
+      "details": {
+        "targets": "🦁, 🐭, 🐯, 🐱",
+        "selected": "🐱, 🐭, 🦊"
+      }
+    },
+    {
+      "id": "e0d2363d-45cf-4e47-8c9d-d809fc35fbd6",
+      "createdAt": "2026-09-22T04:33:48.113Z",
+      "userId": "elder-1",
+      "game": "nback",
+      "score": 4,
+      "total": 4,
+      "accuracy": 75,
+      "difficulty": 2,
+      "details": {
+        "sequence": [
+          "B",
+          "D",
+          "C",
+          "B",
+          "C",
+          "B",
+          "C",
+          "B",
+          "C",
+          "B",
+          "C",
+          "B"
+        ],
+        "matches": [
+          4,
+          6,
+          9,
+          10
+        ],
+        "userHits": [
+          4,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "responseTime": 18241
+      }
+    },
+    {
+      "id": "13ae4f53-94ac-41e1-9405-5a938c8b8977",
+      "createdAt": "2026-09-22T04:34:27.625Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 0,
+      "total": 1,
+      "accuracy": 0,
+      "difficulty": 2,
+      "details": {
+        "target": "Snow",
+        "expected": "Cold",
+        "answer": "Hot"
+      }
     }
   ],
   "reminders": [
@@ -108,6 +234,21 @@
       "id": "r2",
       "title": "Drink water",
       "time": "11:00",
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
+      "active": true
+    },
+    {
+      "id": "2ae35424-2f2e-405a-a4e8-7b9697b05a06",
+      "title": "breakfast",
+      "time": "18:00",
       "days": [
         "Mon",
         "Tue",
