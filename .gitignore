@@ -1,2 +1,5 @@
 .env
 node_modules/
+
+model/daily_task/trained_model.pkl
+model/difficulty/trained_model.pkl
