@@ -1,74 +1,50 @@
 const app=document.getElementById("app");
-function wait(ms){
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-const state={user:JSON.parse(localStorage.getItem("user")||"null"),view:"home",game:null,lang:localStorage.getItem("lang")||"en"};
+function wait(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
+const state={
+  user:JSON.parse(localStorage.getItem("user")||"null"),
+  view:"home",game:null,
+  lang:localStorage.getItem("lang")||"en",
+  level:Number(localStorage.getItem("memorysaathi_level")||1),
+  recommendation:null
+};
 const gameMeta={
  face:{icon:"🐶",title:"Face Recognition",desc:"Memorize faces and recognize the ones you saw."},
  sequence:{icon:"🔢",title:"Sequence Recall",desc:"Remember and reproduce a sequence of numbers."},
  cards:{icon:"🟦",title:"Pattern Memory",desc:"Watch a pattern of cells and repeat it in the correct order."},
- nback:{icon:"🧠",title:"N-Back Memory",desc:"Remember letters and identify when the current letter matches one shown 2 steps ago."},
+ nback:{icon:"🧠",title:"N-Back Memory",desc:"Remember letters and identify when the current letter matches a previous step."},
  association:{icon:"🔗",title:"Memory Association",desc:"Memorize word associations and recall the correct match."}
 };
 function toast(x){const d=document.createElement("div");d.className="toast";d.textContent=x;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
-function shell(content){
- return `<div class="container"><div class="top"><div class="brand">🧠 <span>MemorySaathi</span></div><div class="row">${navigator.onLine?`<span class="pill">● Online</span>`:`<span class="offline">● Offline</span>`}<button class="btn ghost" onclick="logout()">Logout</button></div></div>${content}</div>`;
-}
-function login(){
- app.innerHTML=`<div class="container"><div class="card login"><div style="font-size:55px">🧠</div><h1>MemorySaathi</h1><p class="muted">AI-assisted cognitive gaming & memory assistance platform for elderly users.</p>
- <label>Role</label><select id="role"><option value="elderly">Elderly User</option><option value="caregiver">Caregiver</option></select>
- <label>Demo PIN</label><input id="pin" value="demo123" type="password">
- <button class="btn" style="width:100%" onclick="doLogin()">Continue</button>
- <p class="muted" style="font-size:14px;margin-top:15px">Demo: elder / caregiver • PIN: demo123</p></div></div>`;
-}
-async function doLogin(){try{const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({role:document.getElementById("role").value,pin:document.getElementById("pin").value})});if(!r.ok)throw 0;state.user=await r.json();localStorage.setItem("user",JSON.stringify(state.user));render()}catch{toast("Login failed")}}
+function shell(content){return `<div class="container"><div class="top"><div class="brand">🧠 <span>MemorySaathi</span></div><div class="row">${navigator.onLine?`<span class="pill">● Online</span>`:`<span class="offline">● Offline</span>`}<button class="btn ghost" onclick="logout()">Logout</button></div></div>${content}</div>`}
+function login(){app.innerHTML=`<div class="container"><div class="card login"><div style="font-size:55px">🧠</div><h1>MemorySaathi</h1><p class="muted">AI-assisted cognitive gaming & memory assistance platform for elderly users.</p><label>Role</label><select id="role"><option value="elderly">Elderly User</option><option value="caregiver">Caregiver</option></select><div class="auth-tabs"><button class="btn ghost" id="emailTab" onclick="showEmailAuth()">Email</button><button class="btn ghost" onclick="googleLogin()">Google</button></div><div id="emailAuth"><label>Email</label><input id="email" type="email" placeholder="you@example.com" autocomplete="email"><label>Password</label><input id="password" type="password" placeholder="At least 6 characters" autocomplete="current-password"><div class="row"><button class="btn" onclick="firebaseEmailLogin()">Sign in</button><button class="btn ghost" onclick="firebaseEmailSignup()">Create account</button></div></div><div style="text-align:center;margin:14px 0;color:#777">or use demo PIN</div><label>Demo PIN</label><input id="pin" value="demo123" type="password"><button class="btn" style="width:100%" onclick="doLogin()">Continue with Demo PIN</button><p class="muted" style="font-size:13px;margin-top:15px">Google/email accounts use Firebase Authentication. Demo PIN remains available for local testing.</p></div></div>`}
+async function doLogin(){try{const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({role:document.getElementById("role").value,pin:document.getElementById("pin").value})});if(!r.ok)throw 0;state.user=await r.json();localStorage.setItem("user",JSON.stringify(state.user));await hydrateFromFirebase();render()}catch{toast("Login failed")}}
+function authRole(){return document.getElementById("role")?.value||"elderly"}
+function showEmailAuth(){document.getElementById("email")?.focus()}
+async function firebaseEmailLogin(){try{if(!window.firebaseReady||!window.firebaseAuth)throw new Error("Firebase Authentication is not enabled");const email=document.getElementById("email").value.trim();const password=document.getElementById("password").value;if(!email||!password)return toast("Enter email and password");const cred=await window.firebaseAuth.signInWithEmailAndPassword(email,password);await finishFirebaseLogin(cred.user)}catch(e){toast(e.code==="auth/invalid-credential"?"Invalid email or password":e.message||"Firebase login failed")}}
+async function firebaseEmailSignup(){try{if(!window.firebaseReady||!window.firebaseAuth)throw new Error("Firebase Authentication is not enabled");const email=document.getElementById("email").value.trim();const password=document.getElementById("password").value;if(!email||!password)return toast("Enter email and password");if(password.length<6)return toast("Password must be at least 6 characters");const cred=await window.firebaseAuth.createUserWithEmailAndPassword(email,password);await finishFirebaseLogin(cred.user)}catch(e){toast(e.code==="auth/email-already-in-use"?"Email already registered":e.message||"Account creation failed")}}
+async function googleLogin(){try{if(!window.firebaseReady||!window.firebaseAuth)throw new Error("Firebase Authentication is not enabled");const provider=new window.firebase.auth.GoogleAuthProvider();const cred=await window.firebaseAuth.signInWithPopup(provider);await finishFirebaseLogin(cred.user)}catch(e){toast(e.message||"Google login failed")}}
+async function finishFirebaseLogin(firebaseUser){const role=authRole();state.user={id:firebaseUser.uid,name:firebaseUser.displayName||firebaseUser.email?.split("@")[0]||"User",email:firebaseUser.email||"",role,authProvider:"firebase"};localStorage.setItem("user",JSON.stringify(state.user));if(window.firebaseDb){try{await window.firebaseDb.collection("users").doc(firebaseUser.uid).set({name:state.user.name,email:state.user.email,role,updatedAt:new Date().toISOString()},{merge:true})}catch(e){console.warn("Firebase user profile save failed",e)}}await hydrateFromFirebase();render()}
+
 function logout(){localStorage.removeItem("user");state.user=null;login()}
-function nav(){
- return `<div class="nav"><button onclick="state.view='home';render()">🏠 Home</button><button onclick="state.view='games';render()">🎮 Games</button><button onclick="state.view='reminders';render()">⏰ Reminders</button>${state.user.role==="caregiver"?`<button onclick="state.view='dashboard';render()">📊 Dashboard</button>`:""}<button onclick="state.view='settings';render()">⚙️ Settings</button></div>`;
-}
-function home(){
- const c=Object.entries(gameMeta).map(([k,g])=>`<div class="card game-card"><div><div class="game-icon">${g.icon}</div><h3>${g.title}</h3><p class="muted">${g.desc}</p></div><button class="btn" onclick="openGame('${k}')">${t("play")}</button></div>`).join("");
- return shell(nav()+`<div class="hero card"><h1>${t("welcome")}, ${state.user.name} 👋</h1><p class="muted">Take a short, comfortable cognitive activity session. Your performance helps personalize future difficulty; it is not a medical diagnosis.</p><div class="row"><span class="pill">No stressful timer</span><span class="pill">Offline-friendly</span><span class="pill">Large controls</span></div></div><h2>${t("games")}</h2><div class="grid">${c}</div>`);
-}
+function nav(){return `<div class="nav"><button onclick="state.view='home';render()">🏠 Home</button><button onclick="state.view='games';render()">🎮 Games</button><button onclick="state.view='reminders';render()">⏰ Reminders</button>${state.user.role==="caregiver"?`<button onclick="state.view='dashboard';render()">📊 Dashboard</button>`:""}<button onclick="state.view='settings';render()">⚙️ Settings</button></div>`}
+function home(){const c=Object.entries(gameMeta).map(([k,g])=>`<div class="card game-card"><div><div class="game-icon">${g.icon}</div><h3>${g.title}</h3><p class="muted">${g.desc}</p></div><button class="btn" onclick="openGame('${k}')">${t("play")}</button></div>`).join("");return shell(nav()+`<div class="hero card"><h1>${t("welcome")}, ${state.user.name} 👋</h1><p class="muted">Take a short, comfortable cognitive activity session. Your performance helps personalize future difficulty; it is not a medical diagnosis.</p><div class="row"><span class="pill">Level ${state.level}</span><span class="pill">Offline-friendly</span><span class="pill">Large controls</span></div></div><h2>${t("games")}</h2><div class="grid">${c}</div>`)}
 function games(){return home()}
-function openGame(k){state.game=k;state.view="play";render()}
-function play(){
- const g=gameMeta[state.game];
- return shell(nav()+`<div class="card"><div class="row between"><div><span class="pill">${g.icon} ${g.title}</span><h1>${g.title}</h1><p class="muted">${g.desc}</p></div><div><b>Personalized level</b><div id="levelBadge" class="pill">Level 2</div></div></div><div id="gameArea"></div></div>`);
-}
-function startGame(){
- if(state.game==="face") window.GameFace.start();
- if(state.game==="sequence") window.GameSequence.start();
- if(state.game==="cards") window.GameCards.start();
- if(state.game==="nback") window.GameNBack.start();
- if(state.game==="association") window.GameAssociation.start();
-}
-function result(game,score,total,accuracy,details={}){
- const item={userId:state.user.id,game,score,total,accuracy,difficulty:2,details};
- if(navigator.onLine) fetch("/api/sessions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(item)}).catch(()=>Offline.add(item)); else Offline.add(item);
- const area=document.getElementById("gameArea"); area.innerHTML=`<div class="hero card"><h2>Great job! 🎉</h2><div class="grid"><div><span class="muted">Score</span><div class="stat">${score}/${total}</div></div><div><span class="muted">Accuracy</span><div class="stat">${Math.round(accuracy)}%</div></div></div><p class="muted">Your next recommended level will adapt from recent gameplay performance.</p><button class="btn" onclick="state.view='games';render()">Back to Games</button></div>`;
-}
-function reminders(){
- return shell(nav()+`<div class="card"><div class="row between"><div><h1>⏰ ${t("reminders")}</h1><p class="muted">Simple daily memory support.</p></div><button class="btn" onclick="addReminder()">+ Add</button></div><div id="reminderList">Loading…</div></div>`);
-}
-async function loadReminders(){const rs=await fetch("/api/reminders").then(r=>r.json());document.getElementById("reminderList").innerHTML=rs.map(r=>`<div class="card" style="margin-top:12px"><div class="row between"><div><h3>${r.title}</h3><span class="pill">${r.time}</span></div><button class="btn ghost" onclick="toggleReminder('${r.id}',${!r.active})">${r.active?"Disable":"Enable"}</button></div></div>`).join("")||"<p>No reminders.</p>"}
-async function toggleReminder(id,a){await fetch("/api/reminders/"+id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({active:a})});loadReminders()}
-async function addReminder(){const title=prompt("Reminder name");if(!title)return;const time=prompt("Time (HH:MM)","18:00");if(!time)return;await fetch("/api/reminders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title,time,days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]})});loadReminders()}
-function settings(){
- return shell(nav()+`<div class="card"><h1>⚙️ Settings</h1><label>Language</label><select id="lang"><option value="en">English</option><option value="as">অসমীয়া (Assamese)</option><option value="mni">Manipuri</option><option value="kha">Khasi</option><option value="miz">Mizo</option></select><label>Voice assistance</label><select id="voice"><option value="on">On</option><option value="off">Off</option></select><br><button class="btn" onclick="saveSettings()">Save settings</button></div>`);
-}
-function saveSettings(){const l=document.getElementById("lang").value;localStorage.setItem("lang",l);state.lang=l;toast("Settings saved");render()}
-async function dashboard(){
- const d=await fetch("/api/dashboard/elder-1").then(r=>r.json());
- const rows=d.sessions.slice(-20).reverse().map(s=>`<tr><td>${gameMeta[s.game]?.title||s.game}</td><td>${s.score}/${s.total}</td><td>${Math.round(s.accuracy)}%</td><td>${s.difficulty||2}</td><td>${new Date(s.createdAt).toLocaleString()}</td></tr>`).join("");
- return shell(nav()+`<div class="hero card"><h1>📊 Caregiver Dashboard</h1><p class="muted">Observed gameplay performance only — not a clinical diagnosis.</p><div class="grid"><div class="card"><span class="muted">Sessions</span><div class="stat">${d.sessions.length}</div></div><div class="card"><span class="muted">Games tracked</span><div class="stat">5</div></div><div class="card"><span class="muted">Personalization</span><div class="stat">ON</div></div></div></div><div class="card"><h2>Recent performance</h2><div style="overflow:auto"><table><thead><tr><th>Game</th><th>Score</th><th>Accuracy</th><th>Level</th><th>Date</th></tr></thead><tbody>${rows||"<tr><td colspan=5>No sessions yet</td></tr>"}</tbody></table></div></div>`);
-}
-function render(){
- if(!state.user)return login();
- if(state.view==="play"){app.innerHTML=play();setTimeout(startGame,0);return}
- if(state.view==="reminders"){app.innerHTML=reminders();setTimeout(loadReminders,0);return}
- if(state.view==="settings"){app.innerHTML=settings();setTimeout(()=>document.getElementById("lang").value=state.lang,0);return}
- if(state.view==="dashboard"){dashboard().then(x=>app.innerHTML=x);return}
- app.innerHTML=home();
-}
+async function openGame(k){state.game=k;state.view="play";state.recommendation=await getRecommendedLevel(k);state.level=state.recommendation.level;localStorage.setItem("memorysaathi_level",String(state.level));render()}
+function play(){const g=gameMeta[state.game];return shell(nav()+`<div class="card"><div class="row between"><div><span class="pill">${g.icon} ${g.title}</span><h1>${g.title}</h1><p class="muted">${g.desc}</p></div><div><b>Personalized level</b><div id="levelBadge" class="pill">Level ${state.level}</div></div></div><div id="gameArea"></div></div>`)}
+function startGame(){window.GameConfig={level:state.level,userId:state.user?.id};if(state.game==="face")window.GameFace.start();if(state.game==="sequence")window.GameSequence.start();if(state.game==="cards")window.GameCards.start();if(state.game==="nback")window.GameNBack.start();if(state.game==="association")window.GameAssociation.start()}
+async function getRecommendedLevel(game){try{if(!navigator.onLine)return{level:state.level||1,source:"offline"};const r=await fetch(`/api/adaptive/recommend?userId=${encodeURIComponent(state.user.id)}&game=${encodeURIComponent(game)}`);if(!r.ok)throw 0;return await r.json()}catch{return{level:state.level||1,source:"offline"}}}
+async function saveSessionFirebase(item){if(!window.firebaseReady||!window.firebaseDb)return false;try{const ref=window.firebaseDb.collection("sessions").doc(item.id);await ref.set({...item,createdAt:item.createdAt||new Date().toISOString(),syncedAt:new Date().toISOString()});return true}catch(e){console.warn("Firebase session save failed",e);return false}}
+async function saveSession(item){const payload={...item,id:item.id||crypto.randomUUID(),createdAt:item.createdAt||new Date().toISOString()};const fb=await saveSessionFirebase(payload);if(navigator.onLine){try{const r=await fetch("/api/sessions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});if(!r.ok)throw 0;if(!fb&&window.Offline)Offline.add(payload);}catch{if(window.Offline)Offline.add(payload)}}else if(window.Offline){Offline.add(payload)}return payload}
+function result(game,score,total,accuracy,details={}){const item={userId:state.user.id,game,score,total,accuracy,difficulty:state.level,details};saveSession(item);const area=document.getElementById("gameArea");if(area)area.innerHTML=`<div class="hero card"><h2>Great job! 🎉</h2><div class="grid"><div><span class="muted">Score</span><div class="stat">${score}/${total}</div></div><div><span class="muted">Accuracy</span><div class="stat">${Math.round(accuracy)}%</div></div><div><span class="muted">Level</span><div class="stat">${state.level}</div></div></div><p class="muted">Your next recommended level will adapt from recent gameplay performance.</p><button class="btn" onclick="state.view='games';render()">Back to Games</button></div>`}
+function reminders(){return shell(nav()+`<div class="card"><div class="row between"><div><h1>⏰ ${t("reminders")}</h1><p class="muted">Simple daily memory support.</p></div><button class="btn" onclick="addReminder()">+ Add</button></div><div id="reminderList">Loading…</div></div>`)}
+async function loadReminders(){let rs=[];try{if(window.firebaseReady&&window.firebaseDb&&state.user){const snap=await window.firebaseDb.collection("reminders").where("userId","==",state.user.id).get();rs=snap.docs.map(d=>({id:d.id,...d.data()}));}if(!rs.length)rs=await fetch("/api/reminders").then(r=>r.json())}catch{try{rs=await fetch("/api/reminders").then(r=>r.json())}catch{rs=[]}}document.getElementById("reminderList").innerHTML=rs.map(r=>`<div class="card" style="margin-top:12px"><div class="row between"><div><h3>${r.title}</h3><span class="pill">${r.time}</span></div><button class="btn ghost" onclick="toggleReminder('${r.id}',${!r.active})">${r.active?"Disable":"Enable"}</button></div></div>`).join("")||"<p>No reminders.</p>"}
+async function toggleReminder(id,a){try{if(window.firebaseReady&&window.firebaseDb)await window.firebaseDb.collection("reminders").doc(id).set({active:a},{merge:true});}catch(e){}try{await fetch("/api/reminders/"+id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({active:a})})}catch(e){}loadReminders()}
+async function addReminder(){const title=prompt("Reminder name");if(!title)return;const time=prompt("Time (HH:MM)","18:00");if(!time)return;const id=crypto.randomUUID();const item={id,title,time,days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],active:true,userId:state.user.id};try{if(window.firebaseReady&&window.firebaseDb)await window.firebaseDb.collection("reminders").doc(id).set(item)}catch(e){}try{await fetch("/api/reminders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(item)})}catch(e){}loadReminders()}
+function settings(){return shell(nav()+`<div class="card"><h1>⚙️ Settings</h1><label>Language</label><select id="lang"><option value="en">English</option><option value="as">অসমীয়া (Assamese)</option><option value="mni">Manipuri</option><option value="kha">Khasi</option><option value="miz">Mizo</option></select><label>Voice assistance</label><select id="voice"><option value="on">On</option><option value="off">Off</option></select><br><button class="btn" onclick="saveSettings()">Save settings</button></div>`)}
+async function saveSettings(){const l=document.getElementById("lang").value;localStorage.setItem("lang",l);state.lang=l;if(window.firebaseReady&&window.firebaseDb&&state.user){try{await window.firebaseDb.collection("settings").doc(state.user.id).set({language:l,voice:true,updatedAt:new Date().toISOString()},{merge:true})}catch(e){console.warn("Firebase settings save failed",e)}}toast("Settings saved");render()}
+async function dashboard(){let sessions=[];if(window.firebaseReady&&window.firebaseDb){try{const snap=await window.firebaseDb.collection("sessions").where("userId","==","elder-1").orderBy("createdAt","desc").limit(100).get();sessions=snap.docs.map(d=>d.data()).sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt))}catch(e){console.warn("Firebase dashboard query failed",e)}}if(!sessions.length){try{const d=await fetch("/api/dashboard/elder-1").then(r=>r.json());sessions=d.sessions||[]}catch(e){}}const rows=sessions.slice(-20).reverse().map(s=>`<tr><td>${gameMeta[s.game]?.title||s.game}</td><td>${s.score}/${s.total}</td><td>${Math.round(s.accuracy)}%</td><td>${s.difficulty||1}</td><td>${new Date(s.createdAt).toLocaleString()}</td></tr>`).join("");return shell(nav()+`<div class="hero card"><h1>📊 Caregiver Dashboard</h1><p class="muted">Observed gameplay performance only — not a clinical diagnosis.</p><div class="grid"><div class="card"><span class="muted">Sessions</span><div class="stat">${sessions.length}</div></div><div class="card"><span class="muted">Games tracked</span><div class="stat">5</div></div><div class="card"><span class="muted">Personalization</span><div class="stat">ON</div></div></div></div><div class="card"><h2>Recent performance</h2><div style="overflow:auto"><table><thead><tr><th>Game</th><th>Score</th><th>Accuracy</th><th>Level</th><th>Date</th></tr></thead><tbody>${rows||"<tr><td colspan=5>No sessions yet</td></tr>"}</tbody></table></div></div>`)}
+async function hydrateFromFirebase(){if(!window.firebaseReady||!state.user)return;try{const snap=await window.firebaseDb.collection("settings").doc(state.user.id).get();if(snap.exists&&snap.data().language){state.lang=snap.data().language;localStorage.setItem("lang",state.lang)}}catch(e){}}
+async function render(){if(!state.user){login();return}if(state.view==="play"){app.innerHTML=play();setTimeout(startGame,0);return}if(state.view==="reminders"){app.innerHTML=reminders();setTimeout(loadReminders,0);return}if(state.view==="settings"){app.innerHTML=settings();setTimeout(()=>document.getElementById("lang").value=state.lang,0);return}if(state.view==="dashboard"){app.innerHTML=await dashboard();return}app.innerHTML=home()}
+window.App={state,render,result,getRecommendedLevel};
+window.addEventListener("firebase-ready",()=>{if(state.user)hydrateFromFirebase()});
 render();
