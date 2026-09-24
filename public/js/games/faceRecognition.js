@@ -3,19 +3,20 @@
 
     const FACE_GAME = "face";
     const MAX_LEVEL = 5;
+
     const FACES = [
-        { icon: "🐶", name: "Dog" },
-        { icon: "🐱", name: "Cat" },
-        { icon: "🐭", name: "Mouse" },
-        { icon: "🐹", name: "Hamster" },
-        { icon: "🐰", name: "Rabbit" },
-        { icon: "🦊", name: "Fox" },
-        { icon: "🐻", name: "Bear" },
-        { icon: "🐼", name: "Panda" },
-        { icon: "🐨", name: "Koala" },
-        { icon: "🐯", name: "Tiger" },
-        { icon: "🦁", name: "Lion" },
-        { icon: "🐮", name: "Cow" }
+        { icon: "🐶" },
+        { icon: "🐱" },
+        { icon: "🐭" },
+        { icon: "🐹" },
+        { icon: "🐰" },
+        { icon: "🦊" },
+        { icon: "🐻" },
+        { icon: "🐼" },
+        { icon: "🐨" },
+        { icon: "🐯" },
+        { icon: "🦁" },
+        { icon: "🐮" }
     ];
 
     const LEVELS = {
@@ -43,6 +44,7 @@
             clearTimeout(timer);
             clearInterval(timer);
         });
+
         timers = [];
     }
 
@@ -55,12 +57,20 @@
 
         return Math.min(
             MAX_LEVEL,
-            Math.max(1, Number.isFinite(configured) ? configured : 1)
+            Math.max(
+                1,
+                Number.isFinite(configured)
+                    ? configured
+                    : 1
+            )
         );
     }
 
     function setLevel(level) {
-        const nextLevel = Math.min(MAX_LEVEL, Math.max(1, level));
+        const nextLevel = Math.min(
+            MAX_LEVEL,
+            Math.max(1, level)
+        );
 
         if (window.App?.state) {
             window.App.state.level = nextLevel;
@@ -84,14 +94,22 @@
 
         for (let i = result.length - 1; i > 0; i -= 1) {
             const j = Math.floor(Math.random() * (i + 1));
-            [result[i], result[j]] = [result[j], result[i]];
+
+            [result[i], result[j]] = [
+                result[j],
+                result[i]
+            ];
         }
 
         return result;
     }
 
     function injectStyles(area) {
-        if (area.querySelector("style[data-face-game-style]")) {
+        if (
+            area.querySelector(
+                "style[data-face-game-style]"
+            )
+        ) {
             return;
         }
 
@@ -135,7 +153,11 @@
                 padding: 28px 18px 34px;
                 border: 1px solid #e3e7ef;
                 border-radius: 20px;
-                background: linear-gradient(135deg, #fff, #eef2ff);
+                background: linear-gradient(
+                    135deg,
+                    #fff,
+                    #eef2ff
+                );
             }
 
             .face-game-icon {
@@ -260,7 +282,10 @@
 
             .face-game-face-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+                grid-template-columns: repeat(
+                    auto-fit,
+                    minmax(125px, 1fr)
+                );
                 gap: 14px;
                 max-width: 760px;
                 margin: 0 auto;
@@ -315,11 +340,6 @@
             .face-game-face {
                 font-size: 58px;
                 line-height: 1;
-            }
-
-            .face-game-name {
-                font-size: 15px;
-                font-weight: 800;
             }
 
             .face-game-selection-note {
@@ -382,7 +402,10 @@
             }
 
             .face-game-review .face-game-face-grid {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                grid-template-columns: repeat(
+                    auto-fit,
+                    minmax(100px, 1fr)
+                );
             }
 
             .face-game-review .face-game-card {
@@ -453,36 +476,36 @@
         const className =
             `face-game-card${selected ? " selected" : ""}${state ? ` ${state}` : ""}`;
 
-        const label = `${face.name} face`;
-
         if (button) {
             return `
                 <button
                     type="button"
                     class="${className}"
                     data-face="${face.icon}"
-                    aria-label="${label}"
+                    aria-label="Face option"
                     aria-pressed="${selected}"
                 >
-                    <span class="face-game-face" aria-hidden="true">
+                    <span
+                        class="face-game-face"
+                        aria-hidden="true"
+                    >
                         ${face.icon}
-                    </span>
-
-                    <span class="face-game-name">
-                        ${face.name}
                     </span>
                 </button>
             `;
         }
 
         return `
-            <div class="${className}" aria-label="${label}">
-                <span class="face-game-face" aria-hidden="true">
+            <div
+                class="${className}"
+                aria-label="Face"
+                aria-hidden="true"
+            >
+                <span
+                    class="face-game-face"
+                    aria-hidden="true"
+                >
                     ${face.icon}
-                </span>
-
-                <span class="face-game-name">
-                    ${face.name}
                 </span>
             </div>
         `;
@@ -496,7 +519,10 @@
                 class="face-game-intro"
                 aria-labelledby="face-game-title"
             >
-                <div class="face-game-icon" aria-hidden="true">
+                <div
+                    class="face-game-icon"
+                    aria-hidden="true"
+                >
                     🐶 🐱 🦊
                 </div>
 
@@ -558,6 +584,7 @@
 
     function memorizationScreen(level, round, targets) {
         const config = LEVELS[level];
+
         const targetMarkup = targets
             .map((face) => faceCard(face))
             .join("");
@@ -607,7 +634,13 @@
         `);
     }
 
-    function selectionScreen(level, round, options, selected) {
+    function selectionScreen(
+        level,
+        round,
+        options,
+        selected,
+        targetCount
+    ) {
         return shell(level, `
             <section
                 class="face-game-phase"
@@ -640,7 +673,7 @@
                     id="face-selection-note"
                     class="face-game-selection-note"
                 >
-                    0 faces selected
+                    Selected: 0/${targetCount}
                 </p>
 
                 <div class="face-game-actions">
@@ -665,11 +698,17 @@
     }
 
     function feedback(correct, wrong, targetCount) {
-        if (correct === targetCount && wrong === 0) {
+        if (
+            correct === targetCount &&
+            wrong === 0
+        ) {
             return "Excellent memory! You found every face correctly.";
         }
 
-        if (correct >= Math.ceil(targetCount / 2) && wrong === 0) {
+        if (
+            correct >= Math.ceil(targetCount / 2) &&
+            wrong === 0
+        ) {
             return "Well done! You remembered most of the faces.";
         }
 
@@ -694,10 +733,7 @@
             correct === targets.length &&
             wrong === 0;
 
-        const canProgress = accuracy > 60;
-        const completed =
-            level === MAX_LEVEL &&
-            canProgress;
+        const completed = level === MAX_LEVEL;
 
         const review = options
             .map((face) => {
@@ -716,7 +752,7 @@
             .join("");
 
         const nextAction =
-            level < MAX_LEVEL && canProgress
+            level < MAX_LEVEL
                 ? `
                     <button
                         type="button"
@@ -726,34 +762,30 @@
                         Next Level
                     </button>
                 `
-                : (
-                    completed
-                        ? `
-                            <button
-                                type="button"
-                                class="face-game-button"
-                                data-face-action="retry"
-                            >
-                                Play Again
-                            </button>
-                        `
-                        : ""
-                );
+                : `
+                    <button
+                        type="button"
+                        class="face-game-button"
+                        data-face-action="restart"
+                    >
+                        Restart Game
+                    </button>
+                `;
 
         const title = completed
             ? "Face Recognition Complete!"
             : (
-                canProgress
+                perfect
                     ? "Great job!"
-                    : "Keep practicing!"
+                    : "Round complete"
             );
 
         const message = completed
             ? "Excellent work! You completed all 5 levels."
-            : (
-                canProgress
-                    ? "Great job! You are ready for the next level."
-                    : "Your accuracy must be greater than 60% to advance. Try this level again."
+            : feedback(
+                correct,
+                wrong,
+                targets.length
             );
 
         return shell(level, `
@@ -775,7 +807,6 @@
 
                 <p class="face-game-feedback">
                     ${message}
-                    ${feedback(correct, wrong, targets.length)}
                 </p>
 
                 <div class="face-game-stats">
@@ -849,14 +880,18 @@
         );
 
         area
-            .querySelector('[data-face-action="begin"]')
+            .querySelector(
+                '[data-face-action="begin"]'
+            )
             ?.addEventListener(
                 "click",
                 () => beginRound(level)
             );
 
         area
-            .querySelector('[data-face-action="exit"]')
+            .querySelector(
+                '[data-face-action="exit"]'
+            )
             ?.addEventListener(
                 "click",
                 exitGame
@@ -884,7 +919,8 @@
             FACES.filter(
                 (face) =>
                     !targets.some(
-                        (target) => target.icon === face.icon
+                        (target) =>
+                            target.icon === face.icon
                     )
             )
         ).slice(
@@ -995,7 +1031,8 @@
                 level,
                 currentRound,
                 options,
-                selected
+                selected,
+                targets.length
             )
         );
 
@@ -1006,51 +1043,66 @@
 
             if (note) {
                 note.textContent =
-                    `${selected.size} face${selected.size === 1 ? "" : "s"} selected`;
+                    `Selected: ${selected.size}/${targets.length}`;
             }
         };
 
-        area.querySelectorAll("[data-face]")
+        area
+            .querySelectorAll("[data-face]")
             .forEach((button) => {
-                button.addEventListener("click", () => {
-                    const icon = button.dataset.face;
+                button.addEventListener(
+                    "click",
+                    () => {
+                        const icon = button.dataset.face;
 
-                    if (selected.has(icon)) {
-                        selected.delete(icon);
-                        button.classList.remove("selected");
-                        button.setAttribute(
-                            "aria-pressed",
-                            "false"
-                        );
-                    } else {
-                        selected.add(icon);
-                        button.classList.add("selected");
-                        button.setAttribute(
-                            "aria-pressed",
-                            "true"
-                        );
+                        if (selected.has(icon)) {
+                            selected.delete(icon);
+                            button.classList.remove("selected");
+                            button.setAttribute(
+                                "aria-pressed",
+                                "false"
+                            );
+                        } else {
+                            if (
+                                selected.size >= targets.length
+                            ) {
+                                return;
+                            }
+
+                            selected.add(icon);
+                            button.classList.add("selected");
+                            button.setAttribute(
+                                "aria-pressed",
+                                "true"
+                            );
+                        }
+
+                        updateSelectionNote();
                     }
-
-                    updateSelectionNote();
-                });
+                );
             });
 
         area
-            .querySelector('[data-face-action="submit"]')
+            .querySelector(
+                '[data-face-action="submit"]'
+            )
             ?.addEventListener(
                 "click",
-                () => submitRound(
-                    level,
-                    currentRound,
-                    targets,
-                    options,
-                    selected,
-                    startTime
-                )
+                () =>
+                    submitRound(
+                        level,
+                        currentRound,
+                        targets,
+                        options,
+                        selected,
+                        startTime
+                    )
             );
 
         area
-            .querySelector('[data-face-action="exit"]')
+            .querySelector(
+                '[data-face-action="exit"]'
+            )
             ?.addEventListener(
                 "click",
                 exitGame
@@ -1111,7 +1163,9 @@
                 accuracy,
                 details
             );
-        } else if (typeof window.result === "function") {
+        } else if (
+            typeof window.result === "function"
+        ) {
             window.result(
                 FACE_GAME,
                 correct,
@@ -1147,21 +1201,31 @@
         );
 
         area
-            .querySelector('[data-face-action="retry"]')
+            .querySelector(
+                '[data-face-action="retry"]'
+            )
             ?.addEventListener(
                 "click",
                 () => beginRound(level)
             );
 
         area
-            .querySelector('[data-face-action="next"]')
+            .querySelector(
+                '[data-face-action="restart"]'
+            )
+            ?.addEventListener(
+                "click",
+                restartGame
+            );
+
+        area
+            .querySelector(
+                '[data-face-action="next"]'
+            )
             ?.addEventListener(
                 "click",
                 () => {
-                    if (
-                        !(accuracy > 60) ||
-                        level >= MAX_LEVEL
-                    ) {
+                    if (level >= MAX_LEVEL) {
                         return;
                     }
 
@@ -1171,11 +1235,20 @@
             );
 
         area
-            .querySelector('[data-face-action="exit"]')
+            .querySelector(
+                '[data-face-action="exit"]'
+            )
             ?.addEventListener(
                 "click",
                 exitGame
             );
+    }
+
+    function restartGame() {
+        clearTimers();
+        roundToken += 1;
+        setLevel(1);
+        renderStart(1);
     }
 
     function exitGame() {

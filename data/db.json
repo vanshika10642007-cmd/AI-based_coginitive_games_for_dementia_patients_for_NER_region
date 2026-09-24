@@ -212,6 +212,193 @@
         "expected": "Cold",
         "answer": "Hot"
       }
+    },
+    {
+      "id": "26879f2f-1917-4a14-b4e1-637c2d4066fe",
+      "createdAt": "2026-09-24T15:13:21.676Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 2,
+      "total": 3,
+      "accuracy": 67,
+      "difficulty": 2,
+      "details": {
+        "targets": "🐱, 🦊, 🐻",
+        "selected": "🐱, 🦊",
+        "correct": 2,
+        "wrong": 0,
+        "responseTime": 10127
+      }
+    },
+    {
+      "id": "b5ae0f92-7d69-45dd-8388-5da171f4c1f8",
+      "createdAt": "2026-09-24T15:13:38.674Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 0,
+      "total": 4,
+      "accuracy": 0,
+      "difficulty": 3,
+      "details": {
+        "targets": "🐯, 🐱, 🦁, 🐶",
+        "selected": "🐭, 🐨, 🐹",
+        "correct": 0,
+        "wrong": 3,
+        "responseTime": 12647
+      }
+    },
+    {
+      "id": "f8b64fe9-2264-4570-bdc8-e19b67340bce",
+      "createdAt": "2026-09-24T15:13:55.670Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 2,
+      "total": 5,
+      "accuracy": 0,
+      "difficulty": 4,
+      "details": {
+        "targets": "🐭, 🐼, 🐻, 🐹, 🐶",
+        "selected": "🐭, 🐮, 🦊, 🐹",
+        "correct": 2,
+        "wrong": 2,
+        "responseTime": 10888
+      }
+    },
+    {
+      "id": "97c9d275-7472-44d4-ad16-65800a03ce7f",
+      "createdAt": "2026-09-24T15:14:19.110Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 6,
+      "total": 6,
+      "accuracy": 17,
+      "difficulty": 5,
+      "details": {
+        "targets": "🐼, 🐨, 🦊, 🦁, 🐮, 🐰",
+        "selected": "🐹, 🐱, 🐶, 🦊, 🐼, 🦁, 🐻, 🐮, 🐭, 🐨, 🐰",
+        "correct": 6,
+        "wrong": 5,
+        "responseTime": 19401
+      }
+    },
+    {
+      "id": "c83dce75-f376-46f5-b060-e512757dee8e",
+      "createdAt": "2026-09-24T15:19:07.417Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 4,
+      "total": 5,
+      "accuracy": 60,
+      "difficulty": 4,
+      "details": {
+        "targets": "🦁, 🦊, 🐼, 🐰, 🐶",
+        "selected": "🐼, 🦁, 🐰, 🐯, 🦊",
+        "correct": 4,
+        "wrong": 1,
+        "responseTime": 18908
+      }
+    },
+    {
+      "id": "e593ecff-3aac-4a8f-aba2-37f9d0e7dd12",
+      "createdAt": "2026-09-24T15:19:23.618Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 3,
+      "total": 6,
+      "accuracy": 33,
+      "difficulty": 5,
+      "details": {
+        "targets": "🐼, 🐮, 🐭, 🐰, 🦊, 🐶",
+        "selected": "🐮, 🐨, 🐭, 🐰",
+        "correct": 3,
+        "wrong": 1,
+        "responseTime": 13589
+      }
+    },
+    {
+      "id": "ee880fdb-116f-4272-8e10-9bd1f6bf24b4",
+      "createdAt": "2026-09-24T15:22:41.581Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 0,
+      "total": 5,
+      "accuracy": 0,
+      "difficulty": 4,
+      "details": {
+        "targets": "🐮, 🐨, 🐭, 🐱, 🐻",
+        "selected": "🐯",
+        "correct": 0,
+        "wrong": 1,
+        "responseTime": 11939
+      }
+    },
+    {
+      "id": "1365fdcb-8536-4eed-adf9-14713ccbba24",
+      "createdAt": "2026-09-24T15:22:54.292Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 1,
+      "total": 6,
+      "accuracy": 17,
+      "difficulty": 5,
+      "details": {
+        "targets": "🐭, 🐱, 🐻, 🐮, 🐯, 🐰",
+        "selected": "🐱",
+        "correct": 1,
+        "wrong": 0,
+        "responseTime": 9813
+      }
+    },
+    {
+      "id": "5137cbe3-a4c5-454f-ba2f-10ad2ecde976",
+      "createdAt": "2026-09-24T15:26:48.612Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 2,
+      "total": 5,
+      "accuracy": 0,
+      "difficulty": 4,
+      "details": {
+        "targets": "🐮, 🐼, 🐱, 🦁, 🦊",
+        "selected": "🐮, 🐻, 🐯, 🐼, 🐶",
+        "correct": 2,
+        "wrong": 3,
+        "responseTime": 16118
+      }
+    },
+    {
+      "id": "b4bc70be-19b3-45f8-b86f-5a6ff72ee991",
+      "createdAt": "2026-09-24T15:27:03.881Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 1,
+      "total": 6,
+      "accuracy": 0,
+      "difficulty": 5,
+      "details": {
+        "targets": "🐰, 🐼, 🐭, 🐱, 🐶, 🦁",
+        "selected": "🦊, 🐰, 🐮",
+        "correct": 1,
+        "wrong": 2,
+        "responseTime": 11523
+      }
+    },
+    {
+      "id": "6c1ddfb8-94d6-4f51-a903-761bbbd34034",
+      "createdAt": "2026-09-24T15:27:14.627Z",
+      "userId": "elder-1",
+      "game": "face",
+      "score": 1,
+      "total": 2,
+      "accuracy": 50,
+      "difficulty": 1,
+      "details": {
+        "targets": "🦊, 🐹",
+        "selected": "🐹",
+        "correct": 1,
+        "wrong": 0,
+        "responseTime": 7073
+      }
     }
   ],
   "reminders": [
