@@ -34,7 +34,8 @@ const GAMES = {
   cards:{name:"Connect Cards",domain:"Memory + Attention",levels:5},
   face:{name:"Face Recognizing",domain:"Recognition + Attention",levels:5},
   sequence:{name:"Connect the Sequence",domain:"Executive Function + Sequencing",levels:5},
-  association:{name:"Memory Association",domain:"Semantic + Associative Memory",levels:5}
+  association:{name:"Memory Association",domain:"Semantic + Associative Memory",levels:5},
+  nback:{name:"N-Back Memory",domain:"Working Memory + Attention",levels:5}
 };
 
 app.post("/api/login",(req,res)=>{
@@ -45,6 +46,18 @@ app.post("/api/login",(req,res)=>{
 });
 
 app.get("/api/games",(req,res)=>res.json(GAMES));
+app.get("/api/adaptive/recommend",(req,res)=>{
+  const db=readDB();
+  const userId=req.query.userId, game=req.query.game;
+  const sessions=db.sessions.filter(s=>s.userId===userId && s.game===game).slice(-5);
+  if(!sessions.length) return res.json({level:1,source:"bootstrap"});
+  const accuracy=sessions.reduce((a,s)=>a+Number(s.accuracy||0),0)/sessions.length;
+  const last=Number(sessions[sessions.length-1].difficulty||1);
+  let level=last;
+  if(accuracy>=85) level=Math.min(5,last+1);
+  else if(accuracy<55) level=Math.max(1,last-1);
+  res.json({level,source:"performance",accuracy:Math.round(accuracy)});
+});
 
 app.get("/api/dashboard/:userId",(req,res)=>{
   const db=readDB(), sessions=db.sessions.filter(s=>s.userId===req.params.userId);
