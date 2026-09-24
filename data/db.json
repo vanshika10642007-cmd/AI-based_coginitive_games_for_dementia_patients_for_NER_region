@@ -399,6 +399,306 @@
         "wrong": 0,
         "responseTime": 7073
       }
+    },
+    {
+      "id": "9454833b-a305-4058-914c-d88035d6009c",
+      "createdAt": "2026-09-24T15:48:22.822Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 0,
+      "total": 1,
+      "accuracy": 0,
+      "difficulty": 1,
+      "details": {
+        "target": "Snow",
+        "expected": "Cold",
+        "answer": "Blue"
+      }
+    },
+    {
+      "id": "339acf1a-665d-47e7-ae3b-ef946ea14b2b",
+      "createdAt": "2026-09-24T15:48:38.041Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 0,
+      "total": 1,
+      "accuracy": 0,
+      "difficulty": 2,
+      "details": {
+        "target": "Fire",
+        "expected": "Warm",
+        "answer": "Red"
+      }
+    },
+    {
+      "id": "fecdbbde-c5b9-4683-9091-47c1e7f743cf",
+      "createdAt": "2026-09-24T15:48:50.321Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 3,
+      "details": {
+        "target": "Tree",
+        "expected": "Green",
+        "answer": "Green"
+      }
+    },
+    {
+      "id": "526dae91-8c5c-4960-85f1-b04897fa02b7",
+      "createdAt": "2026-09-24T15:49:02.187Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 0,
+      "total": 1,
+      "accuracy": 0,
+      "difficulty": 4,
+      "details": {
+        "target": "Night",
+        "expected": "Dark",
+        "answer": "Blue"
+      }
+    },
+    {
+      "id": "98a5e2b0-5384-479d-a18a-c7642ebefdc9",
+      "createdAt": "2026-09-24T15:49:16.168Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 5,
+      "details": {
+        "target": "Sun",
+        "expected": "Hot",
+        "answer": "Hot"
+      }
+    },
+    {
+      "id": "e8deba11-ac9d-44d4-b2c2-b704b0bfb6ae",
+      "createdAt": "2026-09-24T15:55:26.182Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 0,
+      "total": 1,
+      "accuracy": 0,
+      "difficulty": 4,
+      "details": {
+        "target": "Sun",
+        "expected": "Hot",
+        "answer": "Red"
+      }
+    },
+    {
+      "id": "cc5a181f-31d9-4851-9a28-5e58d633a116",
+      "createdAt": "2026-09-24T15:55:35.562Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 0,
+      "total": 1,
+      "accuracy": 0,
+      "difficulty": 5,
+      "details": {
+        "target": "Tree",
+        "expected": "Green",
+        "answer": "Hot"
+      }
+    },
+    {
+      "id": "5c2f1647-1aee-45ed-be7f-f810ff69fdb5",
+      "createdAt": "2026-09-24T15:55:49.937Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 0,
+      "total": 1,
+      "accuracy": 0,
+      "difficulty": 1,
+      "details": {
+        "target": "Ocean",
+        "expected": "Blue",
+        "answer": "Soft"
+      }
+    },
+    {
+      "id": "b836d635-da79-426e-80e2-0c5ccbc84ebf",
+      "createdAt": "2026-09-24T16:00:36.576Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 1,
+      "details": {
+        "target": "Apple",
+        "expected": "Red",
+        "answer": "Red"
+      }
+    },
+    {
+      "id": "ccb7cd7a-9858-42aa-bd87-a0b16ddf32fb",
+      "createdAt": "2026-09-24T16:00:52.239Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 2,
+      "details": {
+        "target": "Grass",
+        "expected": "Soft",
+        "answer": "Soft"
+      }
+    },
+    {
+      "id": "f61ca227-d28d-411d-8cb7-4fa4b4307b3a",
+      "createdAt": "2026-09-24T16:01:05.876Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 3,
+      "details": {
+        "target": "Fire",
+        "expected": "Warm",
+        "answer": "Warm"
+      }
+    },
+    {
+      "id": "a735fe6d-b9bb-4435-9178-a04fea71807d",
+      "createdAt": "2026-09-24T16:01:16.619Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 4,
+      "details": {
+        "target": "Ocean",
+        "expected": "Blue",
+        "answer": "Blue"
+      }
+    },
+    {
+      "id": "d733a068-9d9f-4c4d-a1a0-6dc6b360adfa",
+      "createdAt": "2026-09-24T16:01:27.735Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 5,
+      "details": {
+        "target": "Sun",
+        "expected": "Hot",
+        "answer": "Hot"
+      }
+    },
+    {
+      "id": "49737b59-b676-4015-952c-fcacd71d3c9f",
+      "createdAt": "2026-09-24T16:09:21.988Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 5,
+      "details": {
+        "target": "Canyon",
+        "expected": "Ring",
+        "answer": "Ring"
+      }
+    },
+    {
+      "id": "98d2adb6-4709-46d7-988d-675faae9ddab",
+      "createdAt": "2026-09-24T16:09:36.828Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 1,
+      "details": {
+        "target": "Book",
+        "expected": "Star",
+        "answer": "Star"
+      }
+    },
+    {
+      "id": "2f60641d-6ed3-4ed2-8661-1bc4b8efd947",
+      "createdAt": "2026-09-24T16:09:49.236Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 2,
+      "details": {
+        "target": "Island",
+        "expected": "Whistle",
+        "answer": "Whistle"
+      }
+    },
+    {
+      "id": "4dcc8281-8f76-4d6f-ab96-ad3790833f0e",
+      "createdAt": "2026-09-24T16:10:04.751Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 3,
+      "details": {
+        "target": "Station",
+        "expected": "Clock",
+        "answer": "Clock"
+      }
+    },
+    {
+      "id": "a4963e8a-ce85-48c9-95b4-ce997ecda5c2",
+      "createdAt": "2026-09-24T16:11:21.565Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 0,
+      "total": 1,
+      "accuracy": 0,
+      "difficulty": 4,
+      "details": {
+        "target": "Cottage",
+        "expected": "Anchor",
+        "answer": "Lantern"
+      }
+    },
+    {
+      "id": "d080b1aa-7e92-4389-ad64-e0d618a7f539",
+      "createdAt": "2026-09-24T16:11:31.203Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 5,
+      "details": {
+        "target": "Camera",
+        "expected": "Spoon",
+        "answer": "Spoon"
+      }
+    },
+    {
+      "id": "5d87e096-6de1-4575-ac06-40122e8d7ccd",
+      "createdAt": "2026-09-24T16:14:07.373Z",
+      "userId": "elder-1",
+      "game": "association",
+      "score": 1,
+      "total": 1,
+      "accuracy": 100,
+      "difficulty": 5,
+      "details": {
+        "target": "Apple",
+        "expected": "Red",
+        "answer": "Red"
+      }
     }
   ],
   "reminders": [
